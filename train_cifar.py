@@ -11,6 +11,8 @@ from chainer.datasets import get_cifar100
 
 import models.VGG
 
+import matplotlib
+matplotlib.use('Agg')
 
 def main():
     parser = argparse.ArgumentParser(description='Chainer CIFAR example:')
@@ -81,6 +83,15 @@ def main():
 
     # Write a log of evaluation statistics for each epoch
     trainer.extend(extensions.LogReport())
+
+    # Save loss and accuracy plot
+    if extensions.PlotReport.available():
+        trainer.extend(
+            extensions.PlotReport(['main/loss', 'validation/main/loss'],
+                                  'epoch', file_name='loss.png'))
+        trainer.extend(
+            extensions.PlotReport(['main/accuracy', 'validation/main/accuracy'],
+                                  'epoch', file_name='accuracy.png'))
 
     # Print selected entries of the log to stdout
     # Here "main" refers to the target link of the "main" optimizer again, and
