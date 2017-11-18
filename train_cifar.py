@@ -4,6 +4,7 @@ import argparse
 import chainer
 import chainer.links as L
 from chainer import training
+from chainer.training.triggers import MinValueTrigger
 from chainer.training import extensions
 
 from chainer.datasets import get_cifar10
@@ -80,6 +81,10 @@ def main():
 
     # Take a snapshot at each epoch
     trainer.extend(extensions.snapshot(), trigger=(args.epoch, 'epoch'))
+
+    # Take a snapshot of best model
+    trainer.extend(extensions.snapshot_object(model, 'model_best'),
+                   trigger=MinValueTrigger('validation/main/loss'))
 
     # Write a log of evaluation statistics for each epoch
     trainer.extend(extensions.LogReport())
